@@ -1,5 +1,6 @@
 import pytest
 import csv
+import config as cf
 from DataStructures import listiterator as it
 from DataStructures import liststructure as lt
 
