@@ -128,7 +128,7 @@ def countElementsFilteredByColumn(criteria, column, lst, l):
 
 def countElementsByCriteria(criteria, column, lst, l):
         t1_start = process_time() #tiempo inicial
-        counter=0
+        counter=-1
         p = 0
         l_pelis = []
         iterator = it.newIterator(lst)
@@ -142,7 +142,7 @@ def countElementsByCriteria(criteria, column, lst, l):
                 counter+=1           
         t1_stop = process_time() #tiempo final
         print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
-        return (counter, l_pelis, p)
+        return (str(counter+1)+" pelis", l_pelis, "y su calificación promedio es: "+str(p/(counter+1)))
 
 
 def orderElementsByCriteria(function, column, lst, elements):
@@ -182,9 +182,9 @@ def main():
                 if lista==None or lista['size']==0: #obtener la longitud de la lista
                     print("La lista esta vacía")
                 else:
-                    criteria ="Allison Anders"
+                    criteria = input("Director a consultar: ")
                     counter=countElementsByCriteria(criteria,"director_name", l, lista)
-                    print("Coinciden ",counter," elementos con el crtierio: '", criteria)
+                    print("El Director ", criteria," tiene: ", counter)
             elif int(inputs[0])==5: 
                 if lista==None or lista['size']==0: #obtener la longitud de la lista
                     print("La lista esta vacía")
