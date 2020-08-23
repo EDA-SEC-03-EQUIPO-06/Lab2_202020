@@ -55,8 +55,8 @@ def loadCSVFile (file, sep=";"):
         Borra la lista e informa al usuario
     Returns: None  
     """
-    #lst = lt.newList("ARRAY_LIST") #Usando implementacion arraylist
-    lst = lt.newList("ARRAY_LIST") #Usando implementacion linkedlist
+    lst = lt.newList("ARRAY_LIST") #Usando implementacion arraylist
+    #lst = lt.newList() #Usando implementacion linkedlist
     print("Cargando archivo ....")
     t1_start = process_time() #tiempo inicial
     dialect = csv.excel()
@@ -81,7 +81,7 @@ def printMenu():
     print("1- Cargar Datos")
     print("2- Contar los elementos de la Lista")
     print("3- Contar elementos filtrados por palabra clave")
-    print("4- Consultar elementos a partir de dos listas")
+    print("4- Consultar películas de un director")
     print("5- Consultar ranking de películas")
     print("0- Salir")
 
@@ -109,7 +109,7 @@ def less_function(element1,element2,column):
     else:
         return False
 
-def countElementsFilteredByColumn(criteria, column, lst):
+def countElementsFilteredByColumn(criteria, column, lst, l):
     """
     Retorna cuantos elementos coinciden con un criterio para una columna dada  
     Args:
@@ -129,20 +129,40 @@ def countElementsFilteredByColumn(criteria, column, lst):
     else:
         t1_start = process_time() #tiempo inicial
         counter=0
+        p = 0
+        l_pelis = []
         iterator = it.newIterator(lst)
+        i = it.newIterator(l)
         while  it.hasNext(iterator):
             element = it.next(iterator)
+            element2 = it.next(i)
             if criteria.lower() in element[column].lower(): #filtrar por palabra clave 
+                l_pelis.append(element2["title"])
                 counter+=1           
         t1_stop = process_time() #tiempo final
         print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
-    return counter
+    return counter, l_pelis
 
-def countElementsByCriteria(criteria, column, lst):
+def countElementsByCriteria(criteria, column, lst, l):
     """
     Retorna la cantidad de elementos que cumplen con un criterio para una columna dada
     """
-    return 0
+    t1_start = process_time() #tiempo inicial
+    counter=-1
+    p = 0
+    l_pelis = []
+    iterator = it.newIterator(lst)
+    i = it.newIterator(l)
+    while  it.hasNext(iterator):
+        element = it.next(iterator)
+        element2 = it.next(i)
+        if criteria.lower() in element[column].lower(): #filtrar por palabra clave 
+            l_pelis.append(element2["title"])
+            p += float(element2["vote_average"]) 
+            counter+=1           
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+    return (str(counter+1)+" pelis", l_pelis, "y su calificación promedio es: "+str(round(p/(counter+1),2)))
 
 
 def orderElementsByCriteria(orderfunction, column, lista,compfunction, elements):
@@ -183,28 +203,29 @@ def main():
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                lista = loadCSVFile("Data/theMoviesdb/SmallMoviesDetailsCleaned.csv") #llamar funcion cargar datos
-                print("Datos cargados, ",lista['size']," elementos cargados")
+                details = loadCSVFile("Data/theMoviesdb/SmallMoviesDetailsCleaned.csv") #llamar funcion cargar datos
+                casting= loadCSVFile("Data/theMoviesdb/MoviesCastingRaw-small.csv")
+                print("Datos cargados, ",details['size']+ casting['size']," elementos cargados")
             elif int(inputs[0])==2: #opcion 2
-                if lista==None or lista['size']==0: #obtener la longitud de la lista
-                    print("La lista esta vacía")    
-                else: print("La lista tiene ",lista['size']," elementos")
+                if casting==None or casting['size']==0 or details==None or details['size']==0: #obtener la longitud de la lista
+                    print("Alguna de las listas está vacía")    
+                else: print("Las listas tienen ",casting['size']," y ",details['size'], " elementos respectivamente.")
             elif int(inputs[0])==3: #opcion 3
-                if lista==None or lista['size']==0: #obtener la longitud de la lista
-                    print("La lista esta vacía")
+                if casting==None or casting['size']==0 or details==None or details['size']==0: #obtener la longitud de la lista
+                    print("Alguna de las listas está vacía")    
                 else:   
                     criteria =input('Ingrese el criterio de búsqueda\n')
-                    counter=countElementsFilteredByColumn(criteria, "nombre", lista) #filtrar una columna por criterio  
+                    counter=countElementsFilteredByColumn(criteria, "director_name", casting, details) #filtrar una columna por criterio  
                     print("Coinciden ",counter," elementos con el crtierio: ", criteria  )
             elif int(inputs[0])==4: #opcion 4
-                if lista==None or lista['size']==0: #obtener la longitud de la lista
-                    print("La lista esta vacía")
+                if casting==None or casting['size']==0 or details==None or details['size']==0: #obtener la longitud de la lista
+                    print("Alguna de las listas está vacía")
                 else:
-                    criteria =input('Ingrese el criterio de búsqueda\n')
-                    counter=countElementsByCriteria(criteria,0,lista)
-                    print("Coinciden ",counter," elementos con el crtierio: '", criteria ,"' (en construcción ...)")
+                    criteria = input("Director a consultar: ")
+                    counter=countElementsByCriteria(criteria,"director_name", casting, details)
+                    print("El Director ", criteria," tiene: ", counter)
             elif int(inputs[0])==5: #opcion 4
-                if lista==None or lista['size']==0: #obtener la longitud de la lista
+                if details==None or details['size']==0: #obtener la longitud de la lista
                     print("La lista esta vacía")
                 else:
                     printMenuRanking()
@@ -224,7 +245,7 @@ def main():
                         cmpfunction=less_function
                     printMenuOrdenamiento()
                     function=int(input("Digite su opción: "))
-                    ranking=orderElementsByCriteria(function, column, lista,cmpfunction,elements)
+                    ranking=orderElementsByCriteria(function, column, details,cmpfunction,elements)
                     print("El ranking es:  ",ranking)
             elif int(inputs[0])==0: #opcion 0, salir
                 sys.exit(0)
