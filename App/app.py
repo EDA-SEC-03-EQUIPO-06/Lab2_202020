@@ -32,7 +32,8 @@ import csv
 from ADT import list as lt
 from DataStructures import listiterator as it
 from DataStructures import liststructure as lt
-
+import Sorting as s
+from Sorting import insertionsort as ins
 from time import process_time 
 
 
@@ -78,7 +79,20 @@ def printMenu():
     print("4- Consultar elementos a partir de dos listas")
     print("0- Salir")
 
-def countElementsFilteredByColumn(criteria, column, lst):
+
+def f_less(e1, e2, column):
+    if e1[column]<e2[column]:
+        return True
+    else:
+        return False
+
+def f_greater(e1, e2, column):
+    if e1[column]>e2[column]:
+        return True
+    return False
+
+
+def countElementsFilteredByColumn(criteria, column, lst, l):
     """
     Retorna cuantos elementos coinciden con un criterio para una columna dada  
     Args:
@@ -98,26 +112,42 @@ def countElementsFilteredByColumn(criteria, column, lst):
     else:
         t1_start = process_time() #tiempo inicial
         counter=0
+        p = 0
+        l_pelis = []
         iterator = it.newIterator(lst)
+        i = it.newIterator(l)
         while  it.hasNext(iterator):
             element = it.next(iterator)
+            element2 = it.next(i)
             if criteria.lower() in element[column].lower(): #filtrar por palabra clave 
+                l_pelis.append(element2["title"])
                 counter+=1           
         t1_stop = process_time() #tiempo final
         print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
-    return counter
+    return counter, l_pelis
 
-def countElementsByCriteria(criteria, column, lst):
-    """
-    Retorna la cantidad de elementos que cumplen con un criterio para una columna dada
-    """
-    return 0
+def countElementsByCriteria(criteria, column, lst, l):
+        t1_start = process_time() #tiempo inicial
+        counter=0
+        p = 0
+        l_pelis = []
+        iterator = it.newIterator(lst)
+        i = it.newIterator(l)
+        while  it.hasNext(iterator):
+            element = it.next(iterator)
+            element2 = it.next(i)
+            if criteria.lower() in element[column].lower(): #filtrar por palabra clave 
+                l_pelis.append(element2["title"])
+                p += float(element2["vote_average"]) 
+                counter+=1           
+        t1_stop = process_time() #tiempo final
+        print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+        return (counter, l_pelis, p)
+
 
 def orderElementsByCriteria(function, column, lst, elements):
-    """
-    Retorna una lista con cierta cantidad de elementos ordenados por el criterio
-    """
-    return 0
+    return "It's no ready yet"
+
 
 def main():
     """
@@ -128,13 +158,15 @@ def main():
     Return: None 
     """
     lista = lt.newList()   # se require usar lista definida
+    l = lt.newList()
     while True:
         printMenu() #imprimir el menu de opciones en consola
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                lista = loadCSVFile("Data/test.csv") #llamar funcion cargar datos
-                print("Datos cargados, ",lista['size']," elementos cargados")
+                lista = loadCSVFile("Data/SmallMoviesDetailsCleaned.csv") #llamar funcion cargar datos
+                l = loadCSVFile("Data/MoviesCastingRaw-small.csv")
+                print("Datos cargados, ",lista['size']+l["size"]," elementos cargados")
             elif int(inputs[0])==2: #opcion 2
                 if lista==None or lista['size']==0: #obtener la longitud de la lista
                     print("La lista esta vacía")    
@@ -144,15 +176,21 @@ def main():
                     print("La lista esta vacía")
                 else:   
                     criteria =input('Ingrese el criterio de búsqueda\n')
-                    counter=countElementsFilteredByColumn(criteria, "nombre", lista) #filtrar una columna por criterio  
+                    counter=countElementsFilteredByColumn(criteria, "director_name", l, lista) #filtrar una columna por criterio  
                     print("Coinciden ",counter," elementos con el crtierio: ", criteria  )
             elif int(inputs[0])==4: #opcion 4
                 if lista==None or lista['size']==0: #obtener la longitud de la lista
                     print("La lista esta vacía")
                 else:
-                    criteria =input('Ingrese el criterio de búsqueda\n')
-                    counter=countElementsByCriteria(criteria,0,lista)
-                    print("Coinciden ",counter," elementos con el crtierio: '", criteria ,"' (en construcción ...)")
+                    criteria ="Allison Anders"
+                    counter=countElementsByCriteria(criteria,"director_name", l, lista)
+                    print("Coinciden ",counter," elementos con el crtierio: '", criteria)
+            elif int(inputs[0])==5: 
+                if lista==None or lista['size']==0: #obtener la longitud de la lista
+                    print("La lista esta vacía")
+                else:   
+                    r = orderElementsByCriteria(1, "vote_count", lista, 10)   
+                    print("Las top ", 10, " mejores movies ", r  )
             elif int(inputs[0])==0: #opcion 0, salir
                 sys.exit(0)
                 
