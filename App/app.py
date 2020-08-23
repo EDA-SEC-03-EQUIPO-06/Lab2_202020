@@ -124,7 +124,11 @@ def orderElementsByCriteria(function, lst, column, elements,compfuction):
     t1_start = process_time() #tiempo inicial
     respuesta = []
     copia = lt.subList(lst,1,lst["size"])
-    function(copia,compfuction)
+    if function == st2.shellSort:
+        function(copia,compfuction)
+        st.insertionSort(copia,compfuction)
+    else:
+        function(copia,compfuction)
     subListrespuesta = lt.subList(copia,1,elements)
     for i in range(1, subListrespuesta["size"]+1):
         info = lt.getElement(subListrespuesta,i)
@@ -176,8 +180,8 @@ def main():
                     print("La lista esta vacía")    
                 else:
                     column = input("¿Sobre que quiere hacer su ranking? (vote_average o vote_count) ")
-                    elements = int(input("¿Cuantos elementos quiere en su ranking?"))
-                    compFunction = input("Ingrese 1 para un ranking de menor a mayor, 2 para un ranking de mayor a menor")
+                    elements = int(input("¿Cuantos elementos quiere en su ranking? "))
+                    compFunction = input("Ingrese 1 para un ranking de menor a mayor, 2 para un ranking de mayor a menor ")
                     if compFunction == "1":
                         if column == "vote_average":
                             compFunction = comp.lessaverage
