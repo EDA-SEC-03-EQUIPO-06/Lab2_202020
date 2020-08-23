@@ -56,7 +56,7 @@ def loadCSVFile (file, sep=";"):
     Returns: None  
     """
     #lst = lt.newList("ARRAY_LIST") #Usando implementacion arraylist
-    lst = lt.newList() #Usando implementacion linkedlist
+    lst = lt.newList("ARRAY_LIST") #Usando implementacion linkedlist
     print("Cargando archivo ....")
     t1_start = process_time() #tiempo inicial
     dialect = csv.excel()

@@ -40,7 +40,7 @@ def shellSort(lst, lessfunction,column):
         h = 3*h + 1         # por ejemplo para n = 100, h toma un valor inical de 13 , 4, 1
     while (h >= 1):
         for i in range (h,n):
-            j = i1
+            j = i
             while (j>=h) and lessfunction (lt.getElement(lst,j+1),lt.getElement(lst,j-h+1),column):
                 lt.exchange (lst, j+1, j-h+1)
                 j -=h
