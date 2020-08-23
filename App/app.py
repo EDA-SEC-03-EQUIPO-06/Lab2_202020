@@ -32,6 +32,12 @@ import csv
 from ADT import list as lt
 from DataStructures import listiterator as it
 from DataStructures import liststructure as lt
+from Sorting import insertionsort as ins
+from Sorting import selectionsort as ss
+from Sorting import shellsort as shell
+
+
+
 
 from time import process_time 
 
@@ -76,7 +82,32 @@ def printMenu():
     print("2- Contar los elementos de la Lista")
     print("3- Contar elementos filtrados por palabra clave")
     print("4- Consultar elementos a partir de dos listas")
+    print("5- Consultar ranking de películas")
     print("0- Salir")
+
+def printMenuRanking():
+    print("Elija el tipo de Ranking que desee")
+    print("1- Ranking de las mejores películas por calificación")
+    print("2- Ranking de las peores películas por calificación")
+    print("3- Ranking de la películas más votadas")
+    print("4- Ranking de las películas menos votadas")
+
+def printMenuOrdenamiento():
+    print("Especifique con qué método quiere ordenar su ranking: ")
+    print("1- Insertion Sort")
+    print("2- Selection Sort")
+    print("3- Shell Sort")
+
+def greater_function(element1,element2,column):
+    if element1[column] > element2[column]:
+        return True
+    else:
+        return False
+def less_function(element1,element2,column):
+    if element1[column] < element2[column]:
+        return True
+    else:
+        return False
 
 def countElementsFilteredByColumn(criteria, column, lst):
     """
@@ -113,11 +144,31 @@ def countElementsByCriteria(criteria, column, lst):
     """
     return 0
 
-def orderElementsByCriteria(function, column, lst, elements):
+
+def orderElementsByCriteria(orderfunction, column, lista,compfunction, elements):
     """
     Retorna una lista con cierta cantidad de elementos ordenados por el criterio
     """
-    return 0
+    t1_start = process_time() #tiempo inicial
+    if orderfunction==1:
+        ins.insertionSort(lista,compfunction,column)
+    elif orderfunction==2:
+        ss.selectionSort(lista,compfunction,column)
+    elif orderfunction==3:
+        shell.shellSort(lista,compfunction,column)
+        ins.insertionSort(lista,compfunction,column)
+    if 
+    iterator=it.newIterator(lista)
+    ranking=[]
+    x=1
+    while it.hasNext(iterator) and x<=elements:
+        element=it.next(iterator)
+        ranking.append(element.get("original_title"))
+        x+=1
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+    
+    return ranking
 
 def main():
     """
@@ -133,7 +184,7 @@ def main():
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                lista = loadCSVFile("Data/test.csv") #llamar funcion cargar datos
+                lista = loadCSVFile("Data/theMoviesdb/SmallMoviesDetailsCleaned.csv") #llamar funcion cargar datos
                 print("Datos cargados, ",lista['size']," elementos cargados")
             elif int(inputs[0])==2: #opcion 2
                 if lista==None or lista['size']==0: #obtener la longitud de la lista
@@ -153,6 +204,29 @@ def main():
                     criteria =input('Ingrese el criterio de búsqueda\n')
                     counter=countElementsByCriteria(criteria,0,lista)
                     print("Coinciden ",counter," elementos con el crtierio: '", criteria ,"' (en construcción ...)")
+            elif int(inputs[0])==5: #opcion 4
+                if lista==None or lista['size']==0: #obtener la longitud de la lista
+                    print("La lista esta vacía")
+                else:
+                    printMenuRanking()
+                    tiporanking= int(input("Dígite su opción: "))
+                    elements=int(input("Dígite el número de películas que desea ver en el ranking: "))
+                    if tiporanking==1:
+                        column="vote_average"
+                        cmpfunction=greater_function
+                    elif tiporanking==2:
+                        column="vote_average"
+                        cmpfunction=less_function
+                    elif tiporanking==3:
+                        column="vote_count"
+                        cmpfunction=greater_function
+                    elif tiporanking==4:
+                        column="vote_count"
+                        cmpfunction=less_function
+                    printMenuOrdenamiento()
+                    function=int(input("Digite su opción: "))
+                    ranking=orderElementsByCriteria(function, column, lista,cmpfunction,elements)
+                    print("El ranking es:  ",ranking)
             elif int(inputs[0])==0: #opcion 0, salir
                 sys.exit(0)
                 
