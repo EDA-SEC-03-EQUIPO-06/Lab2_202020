@@ -157,7 +157,6 @@ def orderElementsByCriteria(orderfunction, column, lista,compfunction, elements)
     elif orderfunction==3:
         shell.shellSort(lista,compfunction,column)
         ins.insertionSort(lista,compfunction,column)
-    if 
     iterator=it.newIterator(lista)
     ranking=[]
     x=1
